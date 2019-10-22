@@ -51,7 +51,7 @@ def login():
   error = None
   print (request.form['password'])
   if request.method == 'POST':
-    if request.form['username']!="mengwei" and request.form['password']!="666666": #db.pwd.find_one()["pwd"]:
+    if request.form['username']!="admin" and request.form['password']!="12345": #db.pwd.find_one()["pwd"]:
       error = '用户名或密码错误，请重新输入'
       return render_template('login.html',error=error)
     else:
