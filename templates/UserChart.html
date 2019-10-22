@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>小鹰智能导读报表系统</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+    <!--pyecharts-->
+    <script src="https://cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+    <!--bootsrtap-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Custom fonts for this theme -->
+    <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="/static/fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Theme CSS -->
+    <link href="/static/css/freelancer.min.css" rel="stylesheet">
+    
+    <style>
+      .col-center-block {
+          float: none;
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+      }
+      </style>
+</head>
+
+
+<body id="page-top">
+    <script>
+    var ip_addr = document.location.hostname;
+    documnet.write(ip_addr)
+    console.log(ip_addr)
+    </script>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+      <div class="container">
+          <a class="navbar-brand js-scroll-trigger" href="../../skip/1">小鹰智能导读</a>
+          <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+          </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+          <form action="/skip/3" method=get>
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="./../skip/1">用户列表</a>
+            </li>
+          </form>
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="./../skip/2">用户行为</a>
+            </li>
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="./../skip/3">数据报表</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  
+    <!-- Masthead -->
+    <header class="masthead text-white bg-primary text-center">
+      <div class="container d-flex align-items-center flex-column">
+
+        <!-- Masthead Heading -->
+        <h1 class="masthead-heading text-uppercase mb-0">用户数据报表</h1>
+  
+        <!-- Icon Divider -->
+        <div class="divider-custom divider-light">
+          <div class="divider-custom-line"></div>
+          <div class="divider-custom-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="divider-custom-line"></div>
+        </div>
+        <!-- Masthead Subheading -->
+        <p class="masthead-subheading font-weight-light mb-0"> - 小鹰导读 - </p>
+      </div>
+    </header>
+  
+    <!-- 累计用户统计 Section -->
+    <section class="page-section portfolio" id="portfolio">
+      <div class="container">
+  
+        <!-- Portfolio Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">累计用户统计</h2>
+  
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+          <div class="divider-custom-line"></div>
+          <div class="divider-custom-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="divider-custom-line"></div>
+        </div>
+        <!--累计用户日期-->
+        <form action="/get_acc_date" method=post>
+          <div class="form-inline col-center-block text-center">
+              开始日期:   
+              <input class="input-sm form-control" type="date" name="start_acc_date" style="width:200px;"/>
+              结束日期:
+              <input class="input-sm form-control" type="date" name="end_acc_date" style="width:200px;"/>
+              <button type=submit value="submit" class="btn btn-outline-info">提交</button>
+              <label style="font-size:26px;color:rgb(0, 0, 0)">{{acc_error}}</label>
+          </div>
+        </form>
+        <br>
+        <!-- 累计用户统计 Grid Items -->
+        <div class="row">
+            <br>
+            <div id="guide bar">
+              <ul class="nav list-group">
+                <li class="list-group-item"><a href="../../qucik_date_guide/7">前7天</a></li>
+                <li class="list-group-item"><a href="../../qucik_date_guide/30">前30天</a></li>
+                <li class="list-group-item"><a href="../../qucik_date_guide/90">前90天</a></li>
+              </ul>
+              <script>
+                  $(function(){
+                      /* 单机li进行页面跳转 */
+                      $("ul li").click(function(){
+                          /*当前标签下的a标签*/
+                          var obj = $(this).children("a");
+                          /*获取第一个a标签，进行跳转*/
+                      });
+                  })
+              </script>
+            </div>    
+            
+            <!--累积用户图表-->
+            <div id="7day" style="width:800px; height:480px;" class="col-center-block"></div>
+            <script>
+                $(
+                    function () {
+                        var chart = echarts.init(document.getElementById('7day'), 'white', {renderer: 'canvas'});
+                        $.ajax({
+                            type: "GET",
+                            url: "../../accu_line_chart/user",
+                            dataType: 'json',
+                            success: function (result) {
+                                chart.setOption(result);
+                            }
+                        });
+                    }
+                )
+            </script> 
+        </div>
+        <!-- /.row -->
+      </div>
+    </section>
+  
+    <!-- 活跃用户统计 Section -->
+    <section class="page-section" id="contact">
+      <div class="container">
+  
+        <!-- About Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase">活跃用户统计</h2>
+  
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="divider-custom-line"></div>
+          </div>
+        <!--活跃用户日期-->
+        <form action="/get_date" method=post>
+          <div class="form-inline col-center-block text-center">
+              开始日期:   
+              <input class="input-sm form-control" type="date" name="start_date" style="width:200px;"/>
+              结束日期:
+              <input class="input-sm form-control" type="date" name="end_date" style="width:200px;"/>
+              <button type=submit value="submit" class="btn btn-outline-info">提交</button>
+              <label style="font-size:26px;color:rgb(0, 0, 0)">{{active_error}}</label>
+          </div>
+        </form>
+        <br>
+
+        <!-- 报表 Content -->
+        <div class="row">
+            <br>
+            <ul class="nav list-group" id="myTab2">
+              <li class="list-group-item"><a href="#byday">日活跃用户统计</a></li>
+              <li class="list-group-item"><a href="#byweek">周活跃用户统计</a></li>
+              <li class="list-group-item"><a href="#bymonth">月活跃用户统计</a></li>
+            </ul>
+
+              <div class="tab-content">
+                <div class="tab-pane active" id="byday">
+                    <div id="bar1" style="width:800px; height:480px;" class="col-center-block"></div>
+                    <script>
+                        $(
+                            function () {
+                                var chart = echarts.init(document.getElementById('bar1'), 'white', {renderer: 'canvas'});
+                                $.ajax({
+                                    type: "GET",
+                                    url: "../../day_line_chart/user",
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        chart.setOption(result);
+                                    }
+                                });
+                            }
+                        )
+                    </script> 
+                </div>
+                <div class="tab-pane" id="byweek">
+                    <div id="line" style="width:800px; height:480px;" class="col-center-block"></div>
+                    <script>
+                        $(
+                            function () {
+                                var chart = echarts.init(document.getElementById('line'), 'white', {renderer: 'canvas'});
+                                $.ajax({
+                                    type: "GET",
+                                    url: "../../week_line_chart/user",
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        chart.setOption(result);
+                                    }
+                                });
+                            }
+                        )
+                    </script> 
+                </div>
+                <div class="tab-pane" id="bymonth">
+                    <div id="bar2" style="width:800px; height:480px;" class="col-center-block"></div>
+                    <script>
+                        $(
+                            function () {
+                                var chart = echarts.init(document.getElementById('bar2'), 'white', {renderer: 'canvas'});
+                                $.ajax({
+                                    type: "GET",
+                                    url: "../../month_line_chart/user",
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        chart.setOption(result);
+                                    }
+                                });
+                            }
+                        )
+                    </script>
+                </div>
+              </div>
+              
+              <script>
+                $(function () {
+                  $('#myTab2 a:first').tab('show');
+                })
+                $('#myTab2 a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+              })
+              </script>
+        </div>    
+      </div>
+    </section>
+  
+    <!--课程数据 Section -->
+    <section class="page-section" id="Book">
+      <div class="container">
+  
+        <!-- Book Section Heading -->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">课程用户统计</h2>
+  
+        <!-- Icon Divider -->
+        <div class="divider-custom">
+          <div class="divider-custom-line"></div>
+          <div class="divider-custom-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="divider-custom-line"></div>
+        </div>
+  
+        <!-- 图表 -->
+        <div class="row">
+            <div id="bar" style="width:800px; height:480px;" class="col-center-block"></div>
+            <script>
+                $(
+                    function () {
+                        var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
+                        $.ajax({
+                            type: "GET",
+                            url: "../../barChart",
+                            dataType: 'json',
+                            success: function (result) {
+                                chart.setOption(result);
+                            }
+                        });
+                    }
+                )
+            </script>
+      <br>
+
+      <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">课程名称</th>
+              <th scope="col">学习人数</th>
+              <th scope="col">详细信息</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>西游</td>
+              <td>18</td>
+              <td><a type="button" class="btn" role="button" href="./../skip/4">查看</a></td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>西游配音版</td>
+              <td>9</td>
+              <td><a type="button" class="btn" role="button" href="./../skip/5">查看</a></td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>亲子关系</td>
+              <td>8</td>
+              <td><a type="button" class="btn" role="button" href="./../skip/6">查看</a></td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td>亲子关系配音版</td>
+                <td>9</td>
+                <td><a type="button" class="btn" role="button" href="./../skip/7">查看</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+<!--  
+        <div class="col-center-block">      
+              <embed src="http://127.0.0.1:5000/booktable_get_data" width="640" height="480" >
+              </div>
+        
+      <div class="results"> 
+          <table data-toggle="table"> 
+           {% for key in book_data %} 
+            {{ key.Name }} 
+           {% endfor %} 
+          </table> 
+      </div> 
+      <br>
+
+-->
+        </div>
+  
+      </div>
+    </section>
+  
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+          <div class="row">
+    
+            <!-- Footer Location -->
+            <div class="col-lg-4 mb-5 mb-lg-0">
+              <h4 class="text-uppercase mb-4">公司地址</h4>
+              <p class="lead mb-0">中国, 北京</p>
+            </div>
+    
+            <!-- Footer Social Icons -->
+            <div class="col-lg-4 mb-5 mb-lg-0">
+              <h4 class="text-uppercase mb-4">小鹰智能导读</h4>
+              <a class="btn btn-outline-light btn-social mx-1" href="#">
+                <i class="fab fa-fw fa-facebook-f"></i>
+              </a>
+              <a class="btn btn-outline-light btn-social mx-1" href="#">
+                <i class="fab fa-fw fa-twitter"></i>
+              </a>
+              <a class="btn btn-outline-light btn-social mx-1" href="#">
+                <i class="fab fa-fw fa-linkedin-in"></i>
+              </a>
+              <a class="btn btn-outline-light btn-social mx-1" href="#">
+                <i class="fab fa-fw fa-dribbble"></i>
+              </a>
+            </div>
+    
+            <!-- Footer About Text -->
+            <div class="col-lg-4">
+              <h4 class="text-uppercase mb-4">关于我们</h4>
+              <p class="lead mb-0">小鹰智能导读AI伴读系统</p>
+            </div>
+    
+          </div>
+        </div>
+      </footer>
+  
+    <!-- Copyright Section -->
+    <section class="copyright py-4 text-center text-white">
+      <div class="container">
+        <small>Copyright &copy; Your Website 2019</small>
+      </div>
+    </section>
+  
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-to-top d-lg-none position-fixed ">
+      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+      </a>
+    </div>
+  
+    <!-- Bootstrap core JavaScript -->
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+    <!-- Plugin JavaScript -->
+    <script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+  
+    <!-- Contact Form JavaScript -->
+    <script src="/static/js/jqBootstrapValidation.js"></script>
+    <script src="/static/js/contact_me.js"></script>
+  
+    <!-- Custom scripts for this template -->
+    <script src="/static/js/freelancer.min.js"></script>
+  
+  </body>
+</html>>
