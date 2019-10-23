@@ -41,6 +41,16 @@ def transfer_data(data):
         y.append(i["number"])
     return ([x,y])
 
+#获取UserChart用户人数数据（临时）
+def get_user_number():
+    url = "http://13.125.241.222:8080/api/user/list/book"
+    act_data=requests.get(url).text #这里需要写data=XXX而不是直接给
+    act_data=json.loads(act_data)
+    table_data=[]
+    for i in act_data:
+        table_data.append(i["number"])
+    return(table_data)
+
 @app.route('/')
 def index():
   return render_template('login.html')
@@ -51,7 +61,7 @@ def login():
   error = None
   print (request.form['password'])
   if request.method == 'POST':
-    if request.form['username']!="admin" and request.form['password']!="12345": #db.pwd.find_one()["pwd"]:
+    if request.form['username']!="mengwei" and request.form['password']!="666666": #db.pwd.find_one()["pwd"]:
       error = '用户名或密码错误，请重新输入'
       return render_template('login.html',error=error)
     else:
@@ -165,7 +175,9 @@ def skip(num):
     elif num==2:
       return render_template('UserBehavior.html')
     elif num==3:
-      return render_template('UserChart.html')
+      user_number = get_user_number()
+      print(user_number)
+      return render_template('UserChart.html',xiyou_no=user_number[0],xiyou2_no=user_number[1],qinzi_no=user_number[2],qinzi2_no=user_number[3])
     elif num==4:
       return render_template('BookChart.html',book_id="xiyou",book_name="西游")
     elif num==5:
